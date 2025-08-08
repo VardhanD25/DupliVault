@@ -13,7 +13,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(duplivault_lib
     src/Hasher.cpp
     third_party/sha256.cpp 
-    src/Chunker.cpp
+    src/Chunker.cpp 
+    src/StorageRepository.cpp 
+    src/BackupOrchestrator.cpp
 )
 target_include_directories(duplivault_lib
     PUBLIC
