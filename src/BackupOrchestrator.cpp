@@ -26,18 +26,15 @@ void BackupOrchestrator::run_backup(const std::filesystem::path& source_path) {
         auto existing_metadata_opt = repo_.retrieve_metadata(file_path);
         if (existing_metadata_opt.has_value()) {
             auto metadata = existing_metadata_opt.value();
-            // Stored time is in nanoseconds. We need to convert it to a time_point.
             auto stored_mod_time_ns = metadata.value("mod_time_ns", 0);
-            // auto stored_mod_time = std::filesystem::file_time_type(std::chrono::nanoseconds(stored_mod_time_ns));
-            // Create a duration object of the specific type required by file_time_type
-auto duration_since_epoch = std::filesystem::file_time_type::duration(stored_mod_time_ns);
-
-// Now construct the time_point from its own specific duration type
-auto stored_mod_time = std::filesystem::file_time_type(duration_since_epoch);
+            
+            // Explicitly create the duration and then the time_point to avoid IntelliSense issues
+            auto duration_since_epoch = std::filesystem::file_time_type::duration(stored_mod_time_ns);
+            auto stored_mod_time = std::filesystem::file_time_type(duration_since_epoch);
             
             if (stored_mod_time == current_mod_time) {
                 std::cout << "Skipping unchanged file: " << file_path.string() << std::endl;
-                continue; // The file hasn't changed, skip to the next one!
+                continue;
             }
         }
         
@@ -59,13 +56,16 @@ auto stored_mod_time = std::filesystem::file_time_type(duration_since_epoch);
             if (!repo_.chunk_exists(hash)) {
                 std::cout << "  Storing new chunk: " << hash << std::endl;
                 repo_.store_chunk(hash, chunk);
+            } else {
+                // --- THIS IS THE FIX ---
+                // Add this else block to confirm when deduplication happens.
+                std::cout << "  Chunk already exists: " << hash << std::endl;
             }
         }
 
         // --- METADATA GENERATION ---
         nlohmann::json metadata;
         metadata["original_path"] = file_path.string();
-        // Store modification time as nanoseconds since epoch for precision
         metadata["mod_time_ns"] = current_mod_time.time_since_epoch().count();
         metadata["chunk_hashes"] = chunk_hashes;
 
