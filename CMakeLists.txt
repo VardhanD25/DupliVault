@@ -12,7 +12,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Library with core logic
 add_library(duplivault_lib
     src/Hasher.cpp
-    third_party/sha256.cpp
+    third_party/sha256.cpp 
+    src/Chunker.cpp
 )
 target_include_directories(duplivault_lib
     PUBLIC

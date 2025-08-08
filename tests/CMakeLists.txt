@@ -1,6 +1,7 @@
 add_executable(sample_test
     sha256_test.cpp
-    hasher_test.cpp
+    hasher_test.cpp 
+    chunker_test.cpp
 )
 
 target_link_libraries(sample_test
