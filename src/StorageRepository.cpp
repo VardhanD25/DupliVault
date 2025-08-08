@@ -1,6 +1,7 @@
 // src/StorageRepository.cpp
 #include <duplivault/StorageRepository.h>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <duplivault/Hasher.h>
 #include "json.hpp"
@@ -91,6 +92,25 @@ std::optional<nlohmann::json> StorageRepository::retrieve_metadata(const std::fi
     }
     std::ifstream in_file(final_path);
     return nlohmann::json::parse(in_file);
+}
+std::vector<nlohmann::json> StorageRepository::list_all_metadata() {
+    std::vector<nlohmann::json> all_metadata;
+    const auto metadata_path = root_path_ / "metadata";
+    if (!std::filesystem::exists(metadata_path)) {
+        return all_metadata; // Return empty vector if metadata dir doesn't exist
+    }
+
+    for (const auto& dir_entry : std::filesystem::directory_iterator(metadata_path)) {
+        if (dir_entry.is_regular_file()) {
+            std::ifstream in_file(dir_entry.path());
+            try {
+                all_metadata.push_back(nlohmann::json::parse(in_file));
+            } catch (const nlohmann::json::parse_error& e) {
+                std::cerr << "Warning: Could not parse metadata file " << dir_entry.path() << ". Error: " << e.what() << std::endl;
+            }
+        }
+    }
+    return all_metadata;
 }
 
 } // namespace dv

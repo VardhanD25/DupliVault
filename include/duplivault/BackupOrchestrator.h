@@ -2,6 +2,7 @@
 #pragma once
 
 #include <filesystem>
+#include <optional>
 
 // Forward declare the classes we depend on to avoid including their full headers.
 // This is a good practice that can speed up compilation times.
@@ -28,6 +29,9 @@ public:
      * @param source_path The file or directory to back up.
      */
     void run_backup(const std::filesystem::path& source_path);
+
+    void run_restore(const std::filesystem::path& destination_dir, 
+                                     const std::optional<std::filesystem::path>& original_path_opt);
 
 private:
     // References to the components we will use. We don't own them.

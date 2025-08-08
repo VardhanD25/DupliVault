@@ -4,7 +4,8 @@ add_executable(sample_test
     chunker_test.cpp 
     storage_repository_test.cpp 
     backup_orchestrator_test.cpp 
-    metadata_storage_test.cpp
+    metadata_storage_test.cpp 
+    restore_test.cpp
 )
 
 

@@ -68,6 +68,8 @@ public:
      */
     std::optional<json> retrieve_metadata(const std::filesystem::path& original_path);
 
+    std::vector<nlohmann::json> list_all_metadata();
+
 private:
     /**
      * @brief Helper function to determine the full path for a given chunk hash.
